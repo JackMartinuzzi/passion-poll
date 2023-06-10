@@ -1,19 +1,19 @@
 -- CREATE DATABASE --
-CREATE DATABASE scraper;
+CREATE DATABASE pollresults;
 
 -- USE THE DATABASE --
-\c scraper;
+\c pollresults;
 
 -- CREATE TABLES --
-CREATE TABLE IF NOT EXISTS urls (
+CREATE TABLE IF NOT EXISTS "polls" (
   id SERIAL PRIMARY KEY,
-  url VARCHAR(255),
-  parenturl VARCHAR(255),
-  title VARCHAR(255)
+  polltitle VARCHAR(255)
 );
 
-CREATE TABLE IF NOT EXISTS images (
+CREATE TABLE IF NOT EXISTS "choices" (
   id SERIAL PRIMARY KEY,
-  imagesrc VARCHAR(255),
-  parenturl VARCHAR(255)
+  poll_id int,
+  choice_name VARCHAR(50),
+  votes INT,
+  FOREIGN KEY (poll_id) REFERENCES polls(id)
 );

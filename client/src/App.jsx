@@ -1,42 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Bubbles from './Bubbles.jsx';
+import {
+  Button,
+  Modal,
+  Typography,
+  Box,
+  FormControl,
+} from '@mui/material';
+import { modalStyle } from './muiStyles';
+import PollForm from './PollForm.jsx';
+import Poll from './Poll.jsx';
 
 function App() {
-  const [url, setUrl] = useState('');
-  const [crawlInterval, setCrawlInterval] = useState(1);
-  const [go, setGo] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [polls, setPolls] = useState([]);
+  const [storedVotes, setStoredVotes] = useState([]);
+  const handleClick = () => setOpen(!open);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await axios.post('http://localhost:3000/scrape', { url, crawlInterval });
-    setGo(!go);
+  // useEffect to load historical polls
+  useEffect(async () => {
+    await axios.get('http://localhost:3000/pollData')
+      .then((res) => {
+        console.log(res.data);
+        setPolls([...polls, ...res.data]);
+      })
+      .catch((err) => console.log(err.message));
+  }, []);
+
+  const handleCreatePoll = (poll) => {
+    console.log(poll);
+    setPolls([poll, ...polls]);
+    handleClick();
   };
-
-  const fetchData = async () => {
-    const response = await axios.get('http://localhost:3000/scraped-data');
-    setScrapedData(response.data);
-  };
-
-  useEffect(() => {
-    if (url !== '') {
-      const intervalId = setInterval(fetchData, crawlInterval * 1000);
-      return () => clearInterval(intervalId);
-    }
-  }, [go]);
 
   return (
     <div className="main-div">
-      <h1 className="main-title">Web Journey</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="url"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="Enter URL"
-        />
-        <button type="submit">Begin</button>
-      </form>
+      <h1 className="main-title">Passion Poll</h1>
+      <Button
+        className="create-poll-button"
+        variant="contained"
+        onClick={handleClick}
+      >
+        Create Poll
+      </Button>
+      <Modal
+        open={open}
+        onClose={handleClick}
+      >
+        <Box sx={modalStyle} className="create-poll-modal">
+          <Typography id="modal-modal-title" variant="h6" component="h2">
+            Poll Creator
+          </Typography>
+          <PollForm handleCreatePoll={handleCreatePoll} />
+        </Box>
+      </Modal>
+      <div className="polls">
+        {polls.map((poll, index) => (
+          <Poll
+            key={index}
+            title={poll.title}
+            options={poll.options}
+            storedVotes={storedVotes}
+          />
+        ))}
+      </div>
     </div>
   );
 }
