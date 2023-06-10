@@ -1,2 +1,2 @@
-# web-crawler-visualizer
-Simple browser based web crawler which visualizes crawler path through sites. 
+# Passion Poll
+Polling Service that accounts for how bad you want your choice to win
