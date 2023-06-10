@@ -1,17 +1,16 @@
-const mongoose = require('mongoose');
+require('dotenv').config();
+const { Pool } = require('pg');
 
-mongoose.connect('mongodb://localhost/fetcher');
-
-const urlInfoSchema = mongoose.Schema({
-  id: { type: Number, unique: true },
-  url: String,
-
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: 5432,
+  max: 20, // number of allowed connections (default 10)
+  connectionTimeoutMillis: 2000, // time in ms to wait for connection to form (default 0)
+  idleTimeoutMillis: 10000, // time connection can sit idle in pool before discarding (d: 10000),
+  allowExitOnIdle: true, // can node event loop exit process on all connection idle?
 });
 
-const urlInfo = mongoose.model('urlInfo', urlInfoSchema);
-
-const saveUrl = (url) => {
-  return urlInfo.create(url);
-}
-
-module.exports.saveUrl = saveUrl;
+module.exports = pool;

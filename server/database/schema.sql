@@ -1,0 +1,19 @@
+-- CREATE DATABASE --
+CREATE DATABASE scraper;
+
+-- USE THE DATABASE --
+\c scraper;
+
+-- CREATE TABLES --
+CREATE TABLE IF NOT EXISTS urls (
+  id SERIAL PRIMARY KEY,
+  url VARCHAR(255),
+  parenturl VARCHAR(255),
+  title VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS images (
+  id SERIAL PRIMARY KEY,
+  imagesrc VARCHAR(255),
+  parenturl VARCHAR(255)
+);
