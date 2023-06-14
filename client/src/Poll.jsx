@@ -2,44 +2,63 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button } from '@mui/material';
 
-function Poll({ title, options, storedVotes }) {
-  const [started, setStarted] = useState(false);
+function Poll({
+  id,
+  title,
+  options,
+  votes,
+  remainingtime,
+  complete
+}) {
+  const [started, setStarted] = useState(complete);
   const [polled, setPolled] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(10);
-  const [votes, setVotes] = useState(options.map((option, index) =>  ({option: option, numvotes: 0})));
+  const [pollVotes, setPollVotes] = useState(votes);
+  const [timeLeft, setTimeLeft] = useState(remainingtime);
 
-  // if (storedVotes)
+  useEffect(() => {
+    if (complete) {
+      setPolled(started);
+    }
+  }, []);
+
   const handleStartPoll = async () => {
-    await setRemainingTime(10);
     setStarted(true);
     setPolled(true);
   };
 
   const handleVote = (index) => {
     if (started) {
-      const newVotes = [...votes];
-      newVotes[index].numvotes += 1;
-      setVotes(newVotes);
+      const newVotes = [...pollVotes];
+      newVotes[index] += 1;
+      setPollVotes(newVotes);
     }
   };
 
   useEffect(() => {
-    if (started) {
+    if (started && timeLeft > 0) {
       const timer = setTimeout(() => {
-        setStarted(false);
-        axios.post('http://localhost:3000/postPollData', {
-          title,
-          votes,
-        })
-          .then((res) => console.log(res))
-          .catch((err) => console.log(err.message));
-      }, remainingTime * 1000);
-      const timeLeft = setTimeout(() => {
-        setRemainingTime((prevTime) => prevTime - 1);
+        setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
-      return () => [clearTimeout(timeLeft), clearTimeout(timer)];
+      axios
+        .put(`http://localhost:3000/api/polls/${id}`, {
+          title,
+          options,
+          votes: pollVotes,
+          remainingtime: timeLeft,
+        });
+      return () => clearTimeout(timer);
+    } else if (!started || timeLeft <= 0 ) {
+      setStarted(false);
+      axios
+        .put(`http://localhost:3000/api/polls/${id}`, {
+          title,
+          options,
+          votes: pollVotes,
+          remainingtime: timeLeft,
+        })
+      .catch((err) => console.log(err.message));
     }
-  }, [started, remainingTime]);
+  }, [started, timeLeft]);
 
   return (
     <div className="poll">
@@ -58,14 +77,14 @@ function Poll({ title, options, storedVotes }) {
             >
               {option}
             </Button>
-            <p className="votes">{votes[index].numvotes}</p>
+            <p className="votes">{votes[index]}</p>
           </div>
         ))}
       </ul>
       {started && (
       <p>
         Time Left:
-        {remainingTime}
+        {timeLeft}
       </p>
       )}
     </div>
