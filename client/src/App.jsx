@@ -17,15 +17,15 @@ function App() {
   const [storedVotes, setStoredVotes] = useState([]);
   const handleClick = () => setOpen(!open);
 
-  // useEffect to load historical polls
-  useEffect(async () => {
-    await axios.get('http://localhost:3000/pollData')
-      .then((res) => {
-        console.log(res.data);
-        setPolls([...polls, ...res.data]);
-      })
-      .catch((err) => console.log(err.message));
-  }, []);
+  // // useEffect to load historical polls
+  // useEffect(async () => {
+  //   await axios.get('http://localhost:3000/pollData')
+  //     .then((res) => {
+  //       console.log(res.data);
+  //       setPolls([...polls, ...res.data]);
+  //     })
+  //     .catch((err) => console.log(err.message));
+  // }, []);
 
   const handleCreatePoll = (poll) => {
     console.log(poll);

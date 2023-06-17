@@ -1,8 +1,8 @@
 -- CREATE DATABASE --
-CREATE DATABASE pollresults;
+CREATE DATABASE polls;
 
 -- USE THE DATABASE --
-\c pollresults;
+\c polls;
 
 -- CREATE TABLES --
 CREATE TABLE IF NOT EXISTS "polls" (
