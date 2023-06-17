@@ -18,7 +18,7 @@ function PollForm({ handleCreatePoll }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleCreatePoll({ title, options, votes });
+    handleCreatePoll({ title, options, votes, remainingtime: 10, started: false });
     setTitle('');
     setOptions(['']);
     setVotes([]);
@@ -27,7 +27,7 @@ function PollForm({ handleCreatePoll }) {
   return (
     <form onSubmit={handleSubmit}>
       <div className="poll-title-section">
-        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Poll Title">Poll Title</Input>
+        <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Poll Title" required>Poll Title</Input>
         <FormHelperText id="poll-title-helper-text">Give your poll a title</FormHelperText>
         <Button className="add-choice-button" variant="contained" onClick={addOption}>Add choice</Button>
       </div>
@@ -37,6 +37,7 @@ function PollForm({ handleCreatePoll }) {
           label={`Option ${index + 1}`}
           type="text"
           value={option}
+          required
           onChange={(e) => {
             const newOptions = [...options];
             const newVotes = [...votes];
